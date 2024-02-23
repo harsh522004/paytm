@@ -14,8 +14,14 @@ const signinValidate = zod.object({
 
 });
 
+const transferAmountMiddleware = zod.object({
+    to: zod.string(),
+    amount: zod.number()
+});
+
 
 module.exports = {
     signupValidate,
-    signinValidate
+    signinValidate,
+    transferAmountMiddleware
 };

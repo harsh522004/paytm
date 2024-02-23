@@ -1,12 +1,14 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const userRoute = express.Router();
-const { User } = require('../db');
+const { User, Account } = require('../db');
 const { signupValidate, signinValidate } = require('../types');
 const { authMiddleware } = require('../middleware');
 const { JWT_SECRET } = require('../config');
 
-
+function randomNumber(min, max) {
+    return Math.random() * (max - min) + min;
+}
 
 // sign up
 userRoute.post('/signup', async function (req, res) {
@@ -46,6 +48,11 @@ userRoute.post('/signup', async function (req, res) {
         firstname: firstname,
         lastname: lastname,
         password: password
+    });
+
+    await Account.create({
+        userId: newUser._id,
+        balance: randomNumber(1, 10000),
     });
 
     console.log("User Created");
@@ -141,24 +148,13 @@ userRoute.put('/', authMiddleware, async function (req, res) {
     })
 });
 
-
+// get user Data
 userRoute.get('/bulk', async function (req, res) {
     const filterName = req.query.filter || "";
 
     console.log("Quary Name is : ", filterName);
 
-    // const findedUsers = await User.find({
-    //     $or: [{
-    //         firstname: {
-    //             "$regex": filterName,
-    //         },
-    //         lastname: {
-    //             "$regex": filterName,
 
-    //         },
-    //     }]
-    // }
-    // );
 
     const findedUsers = await User.findOne({
         $or: [
