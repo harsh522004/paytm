@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:paytm/screen/signin.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 final mainColor = Vx.hexToColor("#1f319d");
@@ -113,6 +113,27 @@ class SignUpPage extends StatelessWidget {
                   style: TextStyle(color: Colors.white),
                 ).pSymmetric(v: 15),
               ).w(context.screenWidth),
+              Row(
+                children: [
+                  const Text("Already have an account?"),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const SignInPage();
+                      }));
+                    },
+                    child: Text(
+                      "signin",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: mainColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ).pSymmetric(h: 50),
             ],
           ).pSymmetric(v: 80, h: 30),
         ),

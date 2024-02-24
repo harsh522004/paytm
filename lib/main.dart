@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:paytm/screen/dashboard.dart';
 import 'package:paytm/screen/signup.dart';
 
 void main() {
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SignUpPage(),
+      home: const DashBoardPage(),
     );
   }
 }
