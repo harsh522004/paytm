@@ -1,15 +1,12 @@
 const mongoose = require('mongoose');
-const { Schema, number } = require('zod');
-require('dotenv').config();
 
-
-mongoose.connect(process.env.MONGODB_URL);
+mongoose.connect("mongodb+srv://harshbutani125:LVieEHRKoS1P3j1F@cluster0.fktefhx.mongodb.net/Paytm");
 
 const userSchema = new mongoose.Schema({
     username: String,
     firstname: String,
     lastname: String,
-    password: Number
+    password: String
 });
 
 const accountSchema = new mongoose.Schema({

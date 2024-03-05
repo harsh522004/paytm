@@ -4,13 +4,13 @@ const signupValidate = zod.object({
     username: zod.string(),
     firstname: zod.string(),
     lastname: zod.string(),
-    password: zod.number(),
+    password: zod.string(),
 
 });
 
 const signinValidate = zod.object({
     username: zod.string(),
-    password: zod.number(),
+    password: zod.string(),
 
 });
 

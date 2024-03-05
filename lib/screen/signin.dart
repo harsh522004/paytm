@@ -1,15 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:paytm/screen/signup.dart';
+import 'package:paytm/services/auth_services.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 final mainColor = Vx.hexToColor("#1f319d");
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends ConsumerWidget {
   const SignInPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passController = TextEditingController();
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -44,6 +48,7 @@ class SignInPage extends StatelessWidget {
 
               // textform
               TextFormField(
+                controller: usernameController,
                 decoration: InputDecoration(
                   hintText: 'Enter your username...',
                   enabledBorder: const OutlineInputBorder(),
@@ -57,6 +62,7 @@ class SignInPage extends StatelessWidget {
 
               // textform
               TextFormField(
+                controller: passController,
                 decoration: InputDecoration(
                   hintText: 'Enter your password...',
                   enabledBorder: const OutlineInputBorder(),
@@ -81,7 +87,8 @@ class SignInPage extends StatelessWidget {
                   ),
                   backgroundColor: mainColor,
                 ),
-                onPressed: () {},
+                onPressed: () => AuthServices.signinService(
+                    usernameController.text, passController.text, context, ref),
                 child: const Text(
                   "Sign in",
                   style: TextStyle(color: Colors.white),

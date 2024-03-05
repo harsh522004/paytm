@@ -76,31 +76,35 @@ userRoute.post('/signup', async function (req, res) {
 
 // sign in
 userRoute.post('/signin', async function (req, res) {
+
+    console.log("Reqest come at end signIn");
     var payload = req.body;
     var username = payload.username;
 
     var parsedPayload = signinValidate.safeParse(payload);
 
+
+
     if (!parsedPayload.success) {
         return res.status(411).json({
-            message: "Error while logging in"
+            message: "Error while parsing"
         });
     }
 
     const findedUser = await User.findOne({ username: username });
 
+
+
     if (findedUser) {
         const userId = findedUser._id;
         const token = jwt.sign({ userId }, JWT_SECRET);
+
+        console.log("token is : ", token);
         return res.status(200).json({
-            token: token
+            token: token,
+            data: findedUser
         });
     }
-
-    return res.status(411).json({
-        message: "Error while logging in"
-    });
-
 
 });
 
@@ -169,15 +173,7 @@ userRoute.get('/bulk', async function (req, res) {
         console.log("users is :", findedUsers);
         return res.status(200).json({
             user: findedUsers
-            // user: findedUsers.map(user => ({
 
-            //     username: user.username,
-            //     firstname: user.firstname,
-            //     lastname: user.lastname,
-            //     _id: user._id
-
-            // }
-            // ))
         });
     } else {
         return res.status(401).json({
@@ -185,6 +181,39 @@ userRoute.get('/bulk', async function (req, res) {
         });
     }
 
+
+});
+
+
+// get all users
+userRoute.get('/allUser', authMiddleware, async function (req, res) {
+    var userList = await User.find({});
+    if (!userList) {
+        res.status(400).json({
+            error: "Not able to get all users"
+        });
+
+    }
+    res.status(200).json({
+        userlist: userList,
+    });
+});
+
+
+userRoute.get('/userinfo', authMiddleware, async function (req, res) {
+    var userId = req.userId;
+    const findUser = await User.findById({ _id: userId });
+    const accountUser = await Account.findOne({ userId: userId });
+
+    if (!findUser || !accountUser) {
+        res.status(401).json({
+            error: "Not Find User",
+        });
+    }
+    res.status(200).json({
+        userData: findUser,
+        accountData: accountUser
+    });
 
 });
 module.exports = { userRoute };

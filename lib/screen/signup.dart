@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:paytm/screen/signin.dart';
+import 'package:paytm/services/auth_services.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 final mainColor = Vx.hexToColor("#1f319d");
@@ -10,6 +11,11 @@ class SignUpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final usernameController = TextEditingController();
+    final firstnameController = TextEditingController();
+    final lastnameController = TextEditingController();
+    final passwordController = TextEditingController();
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -44,6 +50,7 @@ class SignUpPage extends StatelessWidget {
 
               // textform
               TextFormField(
+                controller: usernameController,
                 decoration: InputDecoration(
                   hintText: 'Enter your username...',
                   enabledBorder: const OutlineInputBorder(),
@@ -57,6 +64,7 @@ class SignUpPage extends StatelessWidget {
 
               //textfrom
               TextFormField(
+                controller: firstnameController,
                 decoration: InputDecoration(
                   hintText: 'Enter your firstname...',
                   enabledBorder: const OutlineInputBorder(),
@@ -70,6 +78,7 @@ class SignUpPage extends StatelessWidget {
 
               // textform
               TextFormField(
+                controller: lastnameController,
                 decoration: InputDecoration(
                   hintText: 'Enter your lastname...',
                   enabledBorder: const OutlineInputBorder(),
@@ -83,6 +92,7 @@ class SignUpPage extends StatelessWidget {
 
               // textform
               TextFormField(
+                controller: passwordController,
                 decoration: InputDecoration(
                   hintText: 'Enter your password...',
                   enabledBorder: const OutlineInputBorder(),
@@ -107,7 +117,12 @@ class SignUpPage extends StatelessWidget {
                   ),
                   backgroundColor: mainColor,
                 ),
-                onPressed: () {},
+                onPressed: () => AuthServices.signupService(
+                    usernameController.text,
+                    firstnameController.text,
+                    lastnameController.text,
+                    passwordController.text,
+                    context),
                 child: const Text(
                   "Sign up",
                   style: TextStyle(color: Colors.white),

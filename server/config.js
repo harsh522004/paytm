@@ -1,5 +1,5 @@
-require('dotenv').config();
-JWT_SECRET = process.env.JWT_SECRET_KEY;
+
+JWT_SECRET = "Harshbutani";
 
 module.exports = {
     JWT_SECRET
