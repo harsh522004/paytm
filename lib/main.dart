@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
       initialRoute: initialRoute,
       routes: {
         '/': (context) => const SignInPage(),
-        '/dashboard': (context) => const DashBoardPage()
+        '/dashboard': (context) => const DashBoardPage(),
+        //'/Tamp': (context) => const Tamp(),
       },
     );
   }

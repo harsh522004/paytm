@@ -13,6 +13,11 @@ class Constant {
 
   static const String getAlluserApi =
       "http://192.168.29.54:8080/api/v1/user/allUser";
+  static const String transferAmountApi =
+      "http://192.168.29.54:8080/api/v1/account/transfer";
+  static const String updateDataApi =
+      "http://192.168.29.54:8080/api/v1/user/change";
+
   static showMessage(String message, BuildContext context) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: message.text.make()));

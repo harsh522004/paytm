@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -99,6 +100,156 @@ class _DashBoardPageState extends ConsumerState<DashBoardPage> {
     }
   }
 
+  Future<dynamic> sheetOpen(
+    BuildContext context,
+  ) {
+    TextEditingController textcontrol = TextEditingController();
+
+    // set dropDown value
+    String dropdownValue = 'username';
+
+    // botttom sheet
+    return showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SizedBox(
+              height: 400,
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(CupertinoIcons.settings),
+                      20.widthBox,
+                      const Text(
+                        "Settings",
+                        style: TextStyle(fontSize: 20),
+                      ),
+                    ],
+                  ),
+                  10.heightBox,
+
+                  // drop down container
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Vx.blue200,
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        dropdownColor: Vx.blue100,
+                        icon: const Icon(CupertinoIcons.chevron_down_circle)
+                            .pOnly(top: 6),
+                        iconSize: 22,
+                        isDense: true,
+                        isExpanded: true,
+                        value: dropdownValue,
+                        items: const [
+                          DropdownMenuItem<String>(
+                              value: "username",
+                              child: Text(
+                                "Username",
+                              )),
+                          DropdownMenuItem<String>(
+                              value: "firstname",
+                              child: Text(
+                                "Firstname",
+                              )),
+                          DropdownMenuItem<String>(
+                              value: "password",
+                              child: Text(
+                                "Password",
+                              )),
+                        ],
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            dropdownValue =
+                                newValue!; // Update dropdownValue when the user selects a new value
+                          });
+                        },
+                      ).pOnly(bottom: 15, top: 10, left: 10, right: 10),
+                    ),
+                  ),
+                  10.heightBox,
+                  TextFormField(
+                    controller: textcontrol,
+                    decoration: const InputDecoration(
+                        enabledBorder: OutlineInputBorder(),
+                        hintText: "Enter You Change"),
+                  ),
+                  10.heightBox,
+                  ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          elevation: 10,
+                          backgroundColor: Vx.blue200,
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)))),
+                      onPressed: () {
+                        updateData(dropdownValue, textcontrol.text, context,
+                            ref, fetchUserData);
+                      },
+                      child: const Text(
+                        "make change",
+                        style: TextStyle(color: Colors.black),
+                      ))
+                ],
+              ).p(24),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void transferAmount(
+      String userId, double amount, double currentAmount) async {
+    try {
+      if (amount <= currentAmount) {
+        // get token from local
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        String? token = pref.getString('token');
+
+        // hit the endpoint
+        final url = Uri.parse(Constant.transferAmountApi);
+        final requestedBody = jsonEncode({"to": userId, "amount": amount});
+        http.Response res = await http.post(url,
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+              'authorization': "barrer $token",
+            },
+            body: requestedBody);
+
+        // success case
+        if (res.statusCode == 200) {
+          final AccountModel? currentAcountModel =
+              ref.read(accountDataProvider.notifier).state;
+          if (currentAcountModel != null) {
+            final AccountModel newAcountModel = AccountModel(
+                id: currentAcountModel.id,
+                userId: currentAcountModel.userId,
+                balance: currentAcountModel.balance - amount);
+            setState(() {
+              ref.read(accountDataProvider.notifier).state = newAcountModel;
+            });
+
+            Constant.showMessage("Transfer Succesfully", context);
+          } else {
+            print("Account Model Null");
+          }
+        }
+      } else {
+        Constant.showMessage("Not Enough Amount", context);
+      }
+    } catch (e) {
+      Constant.showMessage("Server Error occur", context);
+      print("Error getting from catch : $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userDataProvider.notifier).state;
@@ -154,6 +305,16 @@ class _DashBoardPageState extends ConsumerState<DashBoardPage> {
                                   ),
                                 ],
                               ),
+                              const Spacer(),
+                              IconButton(
+                                  onPressed: () {
+                                    sheetOpen(context);
+                                  },
+                                  icon: const Icon(
+                                    CupertinoIcons.settings,
+                                    size: 27,
+                                    color: Vx.blue900,
+                                  )).pOnly(right: 30),
                             ],
                           ),
                           45.heightBox,
@@ -224,7 +385,15 @@ class _DashBoardPageState extends ConsumerState<DashBoardPage> {
                                   trailing: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
                                           backgroundColor: Vx.blue600),
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        transferDailog(context,
+                                            (double amount) {
+                                          transferAmount(usersList[index].id,
+                                              amount, account.balance);
+                                        });
+                                        // transferAmount(usersList[index].id, 100,
+                                        //     account.balance);
+                                      },
                                       child: const Text(
                                         "Transfer",
                                         style: TextStyle(color: Colors.white),
@@ -235,8 +404,89 @@ class _DashBoardPageState extends ConsumerState<DashBoardPage> {
                   ],
                 ),
               )
-            : const CircularProgressIndicator(),
+            : const Center(child: CircularProgressIndicator()),
       ),
     );
   }
+}
+
+void updateData(String change, String newvalue, BuildContext context,
+    WidgetRef ref, VoidCallback fetchUserData) async {
+  print("Update : $change with new value $newvalue");
+  var sendingBody = {};
+
+  // set body according to change
+  if (change == "password") {
+    sendingBody = {"password": newvalue};
+  } else if (change == "firstname") {
+    sendingBody = {
+      "firstname": newvalue,
+    };
+  } else {
+    sendingBody = {
+      "username": newvalue,
+    };
+
+    try {
+      // get token
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      String? token = pref.getString('token');
+
+      // make final json body
+      final finalBody = jsonEncode(sendingBody);
+      final url = Uri.parse(Constant.updateDataApi);
+
+      // hit point
+      http.Response res = await http.put(url,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'authorization': "barrer $token"
+          },
+          body: finalBody);
+
+      // handle response
+      if (res.statusCode == 200) {
+        fetchUserData();
+        Constant.showMessage("Update Data Successfully", context);
+      } else {
+        Constant.showMessage("Server Internal error", context);
+      }
+      Navigator.pop(context);
+    } catch (e) {
+      print("Error getting during catch : $e");
+    }
+  }
+}
+
+Future<dynamic> transferDailog(BuildContext context, Function tansferAmount) {
+  TextEditingController balanceController = TextEditingController();
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Vx.blue50,
+          title: const Text("Transfer Money"),
+          content: TextField(
+              controller: balanceController,
+              decoration: const InputDecoration(hintText: "Enter Balance")),
+          actions: <Widget>[
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Vx.blue400),
+                onPressed: () {
+                  double amount = double.tryParse(balanceController.text) ?? 0;
+                  tansferAmount(amount);
+                  Navigator.pop(context);
+                },
+                child: const Text(
+                  "Send",
+                  style: TextStyle(color: Colors.white),
+                )).w(100).h(40),
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text("cancel")),
+          ],
+        );
+      });
 }

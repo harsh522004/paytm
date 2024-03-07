@@ -110,11 +110,15 @@ userRoute.post('/signin', async function (req, res) {
 
 
 // update
-userRoute.put('/', authMiddleware, async function (req, res) {
-    const { password, firstname, lastname } = req.body;
+userRoute.put('/change', authMiddleware, async function (req, res) {
 
-    if (!password && !firstname && !lastname) {
-        res.status(411).json({
+    console.log("back end point hit");
+    const { password, firstname, username } = req.body;
+
+    console.log("Incoming Body is : ", req.body);
+
+    if (!password && !firstname && !username) {
+        return res.status(411).json({
             message: "Provide a Data tobe change"
         });
     }
@@ -129,25 +133,22 @@ userRoute.put('/', authMiddleware, async function (req, res) {
     if (firstname) {
         userObject.firstname = firstname;
     }
-    if (lastname) {
-        userObject.lastname = lastname;
+    if (username) {
+        userObject.username = username;
     }
 
-
     console.log("Data Tobe change is : ", userObject);
-
-
 
     //userId send by AuthMiddleware, which we use here
     const userResponse = await User.updateOne({ _id: req.userId }, userObject);
 
     if (!userResponse) {
-        res.status(411).json({
+        return res.status(411).json({
             message: "Error While Updating",
         });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
         message: "User Data Updated!",
     })
 });
