@@ -5,7 +5,7 @@ Welcome to the Paytm Flutter App repository! This Flutter application provides a
 ## Features
 
 - **User Authentication**: Users can log in to their accounts securely using JWT authentication tokens.
-- **Dashboard**: View account balance, transaction history, and manage settings.
+- **Dashboard**: View account balance, account details, and manage settings.
 - **Transaction Management**: Transfer funds between accounts and view transaction history.
 - **Settings**: Change account details such as username, password, etc.
 
@@ -26,9 +26,4 @@ Welcome to the Paytm Flutter App repository! This Flutter application provides a
 - **JWT Authentication**: JSON Web Tokens used for user authentication and authorization.
 - **Zod**: TypeScript-first schema declaration and validation library.
 
-## Installation
 
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/your-username/paytm_flutter_app.git
