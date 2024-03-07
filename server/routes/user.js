@@ -115,7 +115,6 @@ userRoute.put('/change', authMiddleware, async function (req, res) {
     console.log("back end point hit");
     const { password, firstname, username } = req.body;
 
-    console.log("Incoming Body is : ", req.body);
 
     if (!password && !firstname && !username) {
         return res.status(411).json({
@@ -137,7 +136,7 @@ userRoute.put('/change', authMiddleware, async function (req, res) {
         userObject.username = username;
     }
 
-    console.log("Data Tobe change is : ", userObject);
+
 
     //userId send by AuthMiddleware, which we use here
     const userResponse = await User.updateOne({ _id: req.userId }, userObject);
